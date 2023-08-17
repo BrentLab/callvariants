@@ -197,7 +197,6 @@ workflow CALLVARIANTS {
     ch_reports = ch_reports.mix(CALL.out.reports)
     ch_versions = ch_versions.mix(CALL.out.versions)
 
-
     //
     // MODULE: MultiQC
     //

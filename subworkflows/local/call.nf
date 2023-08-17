@@ -207,6 +207,7 @@ workflow CALL {
         snpeff_db
     )
     ch_versions = ch_versions.mix(SNPEFF.out.versions)
+    ch_reports = ch_reports.mix(SNPEFF.out.report)
 
     TABIX_BGZIPTABIX_RAW(SNPEFF.out.vcf)
 
@@ -219,6 +220,7 @@ workflow CALL {
         [[],[]]
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS_RAW.out.versions)
+    ch_reports = ch_reports.mix(BCFTOOLS_STATS_RAW.out.stats)
 
     // filter the VCFs
     // TODO: SPLIT THIS INTO A INDIVIDUAL AND JOINT TO PROVIDE
@@ -240,8 +242,10 @@ workflow CALL {
         [[],[]],
         [[],[]]
     )
+    ch_reports = ch_reports.mix(BCFTOOLS_STATS_FLTR.out.stats)
 
     emit:
     vcf = VCFTOOLS.out.vcf   // channel: [val(meta), path(vcf) ]
+    reports = ch_reports    // channel: [ reports.yml ]
     versions  = ch_versions  // channel: [ versions.yml ]
 }
