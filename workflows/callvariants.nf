@@ -200,6 +200,10 @@ workflow CALLVARIANTS {
     //
     // MODULE: MultiQC
     //
+    CUSTOM_DUMPSOFTWAREVERSIONS (
+        ch_versions.unique().collectFile(name: 'collated_versions.yml')
+    )
+
     workflow_summary    = WorkflowCallvariants.paramsSummaryMultiqc(workflow, summary_params)
     ch_workflow_summary = Channel.value(workflow_summary)
 
