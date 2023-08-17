@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/mblab/callvariants/master/assets/schema_input.json",
+    "title": "mblab/callvariants pipeline - params.input schema",
+    "description": "Schema for the file provided with params.input",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "sample": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sample name must be provided, must be unique, and cannot contain spaces"
+            },
+            "group": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Group name must be provided and cannot contain spaces. This may be numeric. This determines the sets of samples that will be combined for joint variant calling"
+            },
+            "fastq_1": {
+                "type": "string",
+                "format": "file-path",
+                "exists": true,
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "fastq_2": {
+                "errorMessage": "FastQ file for reads 2 cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'",
+                "anyOf": [
+                    {
+                        "type": "string",
+                        "format": "file-path",
+                        "exists": true,
+                        "pattern": "^\\S+\\.f(ast)?q\\.gz$"
+                    },
+                    {
+                        "type": "string",
+                        "maxLength": 0
+                    }
+                ]
+            },
+            "fasta":{
+                "errorMessage": "[Optional] Any additional sequences to append to the genome for a given sample. Must be in fasta format. The filename cannot contain spaces and must have extension '.fa', '.fasta' or '.fasta.gz'",
+                "anyOf": [
+                    {
+                        "type": "string",
+                        "format": "file-path",
+                        "exists": true,
+                        "pattern": "^\\S+\\.f(ast)?a(\\.gz)?$"
+                    },
+                    {
+                        "type": "string",
+                        "maxLength": 0
+                    }
+                ]
+            }
+
+        },
+        "required": ["sample", "group", "fastq_1"]
+    }
+}

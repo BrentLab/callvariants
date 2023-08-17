@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "Python: Check samplesheet",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}",
+				"console": "integratedTerminal",
+				"justMyCode": true,
+                "args": ["assets/variant_call_samplesheet.csv", "~/Desktop/tmp/tester.out", "-l", "DEBUG"]
+			}
+		]
+	}
+}

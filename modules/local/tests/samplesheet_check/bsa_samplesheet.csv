@@ -1,0 +1,4 @@
+sample,group,fastq_1,fastq_2,fasta
+A1-35-8,1,assets/test_data/A1-35-8_R1.fastq.gz,assets/test_data/A1-35-8_R2.fastq.gz,assets/test_data/fasta.fa
+A2-102-5,1,assets/test_data/A2-102-5_R1.fastq.gz,assets/test_data/A2-102-5_R2.fastq.gz,assets/test_data/fasta2.fa
+A5-35-17,2,assets/test_data/A5-35-17_R1.fastq.gz,,assets/test_data/fasta3.fa.gz

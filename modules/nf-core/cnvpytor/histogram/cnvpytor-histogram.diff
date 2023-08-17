@@ -1,0 +1,23 @@
+Changes in module 'nf-core/cnvpytor/histogram'
+--- modules/nf-core/cnvpytor/histogram/main.nf
++++ modules/nf-core/cnvpytor/histogram/main.nf
+@@ -9,8 +9,6 @@
+ 
+     input:
+     tuple val(meta), path(pytor)
+-    val bin_sizes
+-
+ 
+     output:
+     tuple val(meta), path("${pytor.baseName}.pytor")	, emit: pytor
+@@ -20,7 +18,7 @@
+     task.ext.when == null || task.ext.when
+ 
+     script:
+-    def bins = bin_sizes ?: '1000'
++    def bins = task.ext.args?.bins ?: '1000'
+     """
+     cnvpytor \\
+         -root $pytor \\
+
+************************************************************

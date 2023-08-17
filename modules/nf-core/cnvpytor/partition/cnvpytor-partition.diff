@@ -1,0 +1,22 @@
+Changes in module 'nf-core/cnvpytor/partition'
+--- modules/nf-core/cnvpytor/partition/main.nf
++++ modules/nf-core/cnvpytor/partition/main.nf
+@@ -9,7 +9,6 @@
+ 
+     input:
+     tuple val(meta), path(pytor)
+-    val bin_sizes
+ 
+     output:
+     tuple val(meta), path("${pytor.baseName}.pytor"), emit: pytor
+@@ -19,7 +18,7 @@
+     task.ext.when == null || task.ext.when
+ 
+     script:
+-    def bins = bin_sizes ?: '1000'
++    def bins = task.ext.args?.bins ?: '1000'
+     """
+     cnvpytor \\
+         -root $pytor \\
+
+************************************************************
