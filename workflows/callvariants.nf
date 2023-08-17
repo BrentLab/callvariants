@@ -252,22 +252,3 @@ workflow.onComplete {
     FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
-// create a meta map for a item in the split fasta channel
-// input: a fasta file path that originates from the splitFasta function
-//        for example /path/to/...workdir.../fastafilename.1.fasta.gz
-//        note that .1.fasta.gz represents the order in which this record was
-//        split -- if the chromosomes are in order, then this is chr1.
-// output: a meta map in the format [id: contig_<index>], eg [id: contig_1] for the
-//         example above
-def add_interval_to_meta(Map meta, bed) {
-
-    def new_meta = [:]
-
-    meta.each{ k,v ->
-        new_meta[k] = v}
-
-    new_meta.interval = bed.baseName - "bed"
-
-    return new_meta
-}
