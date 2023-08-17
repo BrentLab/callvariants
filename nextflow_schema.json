@@ -5,60 +5,44 @@
     "description": "a variant caller intended for both genotype checks and BSA data processing for the Brent and Doering labs",
     "type": "object",
     "definitions": {
-        "variant_calling_options": {
-            "title": "Variant Calling Options",
+        "variant_calling": {
+            "title": "Variant calling",
             "type": "object",
             "description": "",
             "default": "",
             "properties": {
-                "snpeff_db_config": {
-                    "type": "string",
-                    "description": "Path to the snpeff db config file. One is provided with the pipeline which has been augmented to include KN99. The paths are appropriately set for haploid KN99 samples in the kn99_haploid profile. The config file provided with the pipeline is set by default",
-                    "default": "'${projectDir}/assets/snpEff.config'",
-                    "hidden": true,
-                    "format": "file-path"
-                },
-                "snpeff_config_key": {
-                    "type": "string",
-                    "description": "Key name for the organism. For Kn99 for instance this is ASM227612v1 (and it is already set in the kn99 profile)",
-                    "hidden": true
-                },
-                "snpeff_db": {
-                    "type": "string",
-                    "default": "${projectDir}/assets/snpeff_db",
-                    "description": "path to a snpeff database. By default, set to a db that is in the workflow directory suitable for KN99",
-                    "hidden": true
-                },
                 "cnvpytor_conf_file": {
                     "type": "string",
-                    "description": "Path to the cnvpytor configuration file for the genome/organism in a given run of the pipeline",
-                    "format": "file-path",
-                    "hidden": true
+                    "format": "file-path"
                 },
                 "cnvpytor_gc_file": {
                     "type": "string",
-                    "description": "path to a file describing the GC content of a given organism",
-                    "hidden": true,
                     "format": "file-path"
+                },
+                "snpeff_db_config": {
+                    "type": "string",
+                    "format": "file-path"
+                },
+                "snpeff_config_key": {
+                    "type": "string"
+                },
+                "snpeff_db": {
+                    "type": "string",
+                    "format": "directory-path"
                 },
                 "region_bed_mask": {
                     "type": "string",
-                    "default": "/home/oguzkhan/code/mblab_call_variants_redo/mblab-callvariants/assets/dustmasked.KN99.bed",
-                    "description": "A bed file describing regions that should be filtered out of the freebayes and tiddit vcfs",
-                    "pattern": "^\\S+\\.bed$",
-                    "format": "file-path",
-                    "mimetype": "text/plain",
-                    "hidden": true
+                    "format": "file-path"
+                },
+                "call_individual_variants": {
+                    "type": "boolean",
+                    "default": true
+                },
+                "call_joint_variants": {
+                    "type": "boolean",
+                    "default": true
                 }
-            },
-            "required": [
-                "ploidy",
-                "snpeff_db_config",
-                "cnvpytor_conf_file",
-                "snpeff_config_key",
-                "snpeff_db",
-                "cnvpytor_gc_file"
-            ]
+            }
         },
         "input_output_options": {
             "title": "Input/output options",
@@ -73,7 +57,6 @@
                     "exists": true,
                     "mimetype": "text/csv",
                     "pattern": "^\\S+\\.csv$",
-                    "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
@@ -89,36 +72,25 @@
                     "description": "Email address for completion summary.",
                     "fa_icon": "fas fa-envelope",
                     "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
-                    "hidden": true
+                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
                 },
                 "multiqc_title": {
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature",
-                    "hidden": true
+                    "fa_icon": "fas fa-file-signature"
                 },
                 "save_intermediates": {
-                    "type": "boolean",
-                    "description": "Set to true to save all intermediate files produced by the various steps of this pipeline"
+                    "type": "boolean"
                 },
-                "call_individual_variants": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Set this flag to call variants on samples individually",
-                    "hidden": true
+                "debug": {
+                    "type": "boolean"
                 },
-                "call_joint_variants": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Set to true to call variants on the sets of groups identified in the input samplesheet",
-                    "hidden": true
+                "save_reference": {
+                    "type": "boolean"
                 },
                 "platform": {
                     "type": "string",
-                    "default": "platform_not_set",
-                    "description": "The sequencing platform used. Default is 'platform_not_set'",
-                    "hidden": true
+                    "default": "platform_not_set"
                 }
             }
         },
@@ -139,18 +111,9 @@
                     "fa_icon": "far fa-file-code"
                 },
                 "fasta_fai": {
-                    "type": "string",
-                    "description": "path to the genome fai index. Note that if additional fasta sequences are passed in the input samplesheet, then the index is created after appending the additional sequences regardles of whether this is passed or not",
-                    "hidden": true,
-                    "format": "file-path",
-                    "mimetype": "text/plain"
-                },
-                "save_reference": {
-                    "type": "boolean",
-                    "description": "A flag to control whether to save genome, indicies, etc in the results directory. Defaults to false."
+                    "type": "string"
                 }
-            },
-            "required": ["fasta"]
+            }
         },
         "institutional_config_options": {
             "title": "Institutional config options",
@@ -208,9 +171,7 @@
                 },
                 "nucleotides_per_second": {
                     "type": "integer",
-                    "description": "Number of nucleotides to include in each genome bin for freebayes parallelization. The default is 1000, which is copied from nf-core/sarek",
-                    "default": 1000,
-                    "hidden": true
+                    "default": 1000
                 }
             }
         },
@@ -293,8 +254,7 @@
                 "multiqc_methods_description": {
                     "type": "string",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
-                    "fa_icon": "fas fa-cog",
-                    "hidden": true
+                    "fa_icon": "fas fa-cog"
                 },
                 "validate_params": {
                     "type": "boolean",
@@ -329,7 +289,7 @@
     },
     "allOf": [
         {
-            "$ref": "#/definitions/variant_calling_options"
+            "$ref": "#/definitions/variant_calling"
         },
         {
             "$ref": "#/definitions/input_output_options"
