@@ -1,2 +1,2 @@
 sample,group,genome_name,fastq_1,fastq_2,additional_fasta
-A1-35-8,1,main,https://github.com/cmatKhan/variant_calling_and_bsa/raw/main/assets/test_data/A1-35-8_R1.fastq.gz,https://github.com/cmatKhan/variant_calling_and_bsa/raw/main/assets/test_data/A1-35-8_R2.fastq.gz,
+A1-35-8,1,main,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/A1-35-8_R1.fastq.gz,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/A1-35-8_R2.fastq.gz,
