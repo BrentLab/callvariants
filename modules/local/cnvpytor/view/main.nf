@@ -11,7 +11,6 @@ process CNVPYTOR_VIEW {
     tuple val(meta), path(pytor_files)
 
     output:
-    tuple val(meta), path("*.vcf"), emit: vcf      , optional: true
     tuple val(meta), path("*.tsv"), emit: tsv      , optional: true
     tuple val(meta), path("*.xls"), emit: xls      , optional: true
     path "versions.yml"           , emit: versions
@@ -20,7 +19,7 @@ process CNVPYTOR_VIEW {
     task.ext.when == null || task.ext.when
 
     script:
-    def output_suffix = task.ext.args?.output_format ?: 'vcf'
+    def output_suffix = 'tsv'
     def bins   = task.ext.args?.bins ?: '1000'
     def filter = task.ext.args?.filter ?: ''
     def min_cnv_depth = task.ext.args?.min_cnv_depth ?: '0'
