@@ -45,7 +45,7 @@ process SNPEFF {
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
         snpeff: \$(echo \$(snpEff -version 2>&1) | cut -f 2 -d ' ')
-        snpeff_config: "${projectDir}"/assets/snpEff.config
+        snpeff_config: "${projectDir}/assets/snpEff.config"
     END_VERSIONS
     """
 }

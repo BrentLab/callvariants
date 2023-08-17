@@ -21,27 +21,27 @@ workflow CNVPYTOR_COMPLETE {
         cnvpytor_genome_conf,
         cnvpytor_genome_gc_ch
     )
-    ch_versions = ch_versions.mix(CNVPYTOR_IMPORTREADDEPTH.out.versions)
+    ch_versions = ch_versions.mix(CNVPYTOR_IMPORTREADDEPTH.out.versions.first())
 
     CNVPYTOR_HISTOGRAM(
         CNVPYTOR_IMPORTREADDEPTH.out.pytor
     )
-    ch_versions = ch_versions.mix(CNVPYTOR_HISTOGRAM.out.versions)
+    ch_versions = ch_versions.mix(CNVPYTOR_HISTOGRAM.out.versions.first())
 
     CNVPYTOR_PARTITION(
         CNVPYTOR_HISTOGRAM.out.pytor
     )
-    ch_versions = ch_versions.mix(CNVPYTOR_PARTITION.out.versions)
+    ch_versions = ch_versions.mix(CNVPYTOR_PARTITION.out.versions.first())
 
     CNVPYTOR_VIEW(
         CNVPYTOR_PARTITION.out.pytor
     )
-    ch_versions = ch_versions.mix(CNVPYTOR_VIEW.out.versions)
+    ch_versions = ch_versions.mix(CNVPYTOR_VIEW.out.versions.first())
 
     CNVPYTOR_VIEW_TSV_FLTR(
         CNVPYTOR_PARTITION.out.pytor
     )
-    ch_versions = ch_versions.mix(CNVPYTOR_VIEW_TSV_FLTR.out.versions)
+    ch_versions = ch_versions.mix(CNVPYTOR_VIEW_TSV_FLTR.out.versions.first())
 
 
     emit:

@@ -52,7 +52,7 @@ workflow CALL {
         cnvpytor_tiddit_input.genome,
         cnvpytor_tiddit_input.bwa_index
     )
-    ch_versions = ch_versions.mix(TIDDIT_SV.out.versions)
+    ch_versions = ch_versions.mix(TIDDIT_SV.out.versions.first())
     ch_reports = ch_reports.mix(TIDDIT_SV.out.ploidy.map{ it -> it[1]})
 
     // zip, index and add the key 'variant_caller' to the meta
@@ -62,7 +62,7 @@ workflow CALL {
                 def new_meta = meta.clone()
                 new_meta.variant_caller = 'tiddit'
                 [new_meta, vcf] } )
-    ch_versions = ch_versions.mix(TABIX_BGZIPTABIX_TIDDIT.out.versions)
+    ch_versions = ch_versions.mix(TABIX_BGZIPTABIX_TIDDIT.out.versions.first())
 
     ch_all_vcfs = ch_all_vcfs.mix(TABIX_BGZIPTABIX_TIDDIT.out.gz_tbi)
 
@@ -74,6 +74,7 @@ workflow CALL {
         cnvpytor_genome_conf,
         cnvpytor_genome_gc_ch
     )
+    ch_versions = ch_versions.mix(CNVPYTOR_COMPLETE.out.versions)
 
     // if call_individual_variants is true, then use freebayes to call
     // variants individually
@@ -99,7 +100,7 @@ workflow CALL {
             [],
             []
         )
-        ch_versions   = ch_versions.mix(FREEBAYES_INDIVIDUAL.out.versions)
+        ch_versions   = ch_versions.mix(FREEBAYES_INDIVIDUAL.out.versions.first())
 
         // combine chunks into a single channel
         FREEBAYES_INDIVIDUAL.out.vcf
@@ -120,7 +121,7 @@ workflow CALL {
             ch_individual_collected_freebayes_vcfs,
             freebayes_individual_input.sequence_dict
         )
-        ch_versions = ch_versions.mix(GATK4_MERGEVCFS_INDIVIDUAL.out.versions)
+        ch_versions = ch_versions.mix(GATK4_MERGEVCFS_INDIVIDUAL.out.versions.first())
 
 
         // collect the freebayes and tiddit SV into a single channel
@@ -169,7 +170,7 @@ workflow CALL {
             [],
             []
         )
-        ch_versions   = ch_versions.mix(FREEBAYES_JOINT.out.versions)
+        ch_versions   = ch_versions.mix(FREEBAYES_JOINT.out.versions.first())
 
         // combine chunks into a single channel
         FREEBAYES_JOINT.out.vcf
@@ -190,6 +191,7 @@ workflow CALL {
             ch_joint_collected_freebayes_vcfs,
             freebayes_joint_input.sequence_dict
         )
+        ch_versions = ch_versions.mix(GATK4_MERGEVCFS_JOINT.out.versions.first())
 
         // structure [meta, path(vcf.gz), path(vcf.gz.tbi)]
         ch_joint_gz_tbi = GATK4_MERGEVCFS_JOINT.out.vcf
@@ -207,8 +209,8 @@ workflow CALL {
         snpeff_config,
         snpeff_db
     )
-    ch_versions = ch_versions.mix(SNPEFF.out.versions)
-    ch_reports = ch_reports.mix(SNPEFF.out.report.map{ it -> it[1]})
+    ch_versions = ch_versions.mix(SNPEFF.out.versions.first())
+    ch_reports = ch_reports.mix(SNPEFF.out.report)
 
     TABIX_BGZIPTABIX_RAW(SNPEFF.out.vcf)
 
@@ -220,7 +222,7 @@ workflow CALL {
         [[],[]],
         [[],[]]
     )
-    ch_versions = ch_versions.mix(BCFTOOLS_STATS_RAW.out.versions)
+    ch_versions = ch_versions.mix(BCFTOOLS_STATS_RAW.out.versions.first())
     ch_reports = ch_reports.mix(BCFTOOLS_STATS_RAW.out.stats.map{it -> it[1]})
 
     // filter the VCFs
@@ -231,7 +233,7 @@ workflow CALL {
         region_bed_mask,
         []
     )
-    ch_versions   = ch_versions.mix(VCFTOOLS.out.versions)
+    ch_versions   = ch_versions.mix(VCFTOOLS.out.versions.first())
 
     TABIX_BGZIPTABIX_FLTR( VCFTOOLS.out.vcf )
 

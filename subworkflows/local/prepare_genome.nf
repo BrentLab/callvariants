@@ -29,7 +29,7 @@ workflow PREPARE_GENOME {
     // this is only executed with additional_fasta has a fasta file
     //
     CONCATFASTA ( genome_fasta, additional_fasta )
-    ch_versions = ch_versions.mix(CONCATFASTA.out.versions)
+    ch_versions = ch_versions.mix(CONCATFASTA.out.versions.first())
 
     // This (should -- keep an eye on this) create a channel where the
     // entries in the additional_fasta channel which do not have an additional
@@ -66,13 +66,13 @@ workflow PREPARE_GENOME {
     BUILD_INTERVALS(
         SAMTOOLS_FAIDX.out.fai
     )
-    ch_versions = ch_versions.mix(BUILD_INTERVALS.out.versions)
+    ch_versions = ch_versions.mix(BUILD_INTERVALS.out.versions.first())
 
     // CREATE_INTERVALS_BED splits the bed file by line
     CREATE_INTERVALS_BED(
         BUILD_INTERVALS.out.bed
     )
-    ch_versions = ch_versions.mix(CREATE_INTERVALS_BED.out.versions)
+    ch_versions = ch_versions.mix(CREATE_INTERVALS_BED.out.versions.first())
 
     // transpose the channel so that we get
     // [[meta, bed_chunk1], [meta, bed_chunk2], ...]
@@ -91,17 +91,17 @@ workflow PREPARE_GENOME {
         ch_bwamem2_index = Channel.fromPath(params.bwamem2_index).collect()
     } else {
         BWAMEM2_INDEX ( ch_fasta_with_meta )
-        ch_versions = ch_versions.mix(BWAMEM2_INDEX.out.versions)
+        ch_versions = ch_versions.mix(BWAMEM2_INDEX.out.versions.first())
     }
 
     //
     // index genome with bwa index (index for bwa aln) for TIDIT SV
     //
     BWA_INDEX( ch_fasta_with_meta )
-    ch_versions = ch_versions.mix(BWA_INDEX.out.versions)
+    ch_versions = ch_versions.mix(BWA_INDEX.out.versions.first())
 
     GATK4_CREATESEQUENCEDICTIONARY( ch_fasta_with_meta )
-    ch_versions   = ch_versions.mix(GATK4_CREATESEQUENCEDICTIONARY.out.versions)
+    ch_versions   = ch_versions.mix(GATK4_CREATESEQUENCEDICTIONARY.out.versions.first())
 
     ch_fasta_with_meta
         .join(SAMTOOLS_FAIDX.out.fai)

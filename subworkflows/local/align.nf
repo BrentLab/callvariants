@@ -21,7 +21,7 @@ workflow ALIGN {
         reads_with_genome_data.map{ it -> [it[0], it[4]]},
         true
     )
-    ch_versions = ch_versions.mix(BWAMEM2_MEM.out.versions)
+    ch_versions = ch_versions.mix(BWAMEM2_MEM.out.versions.first())
 
     PICARD_MARKDUPLICATES(
         BWAMEM2_MEM.out.bam,
@@ -33,7 +33,7 @@ workflow ALIGN {
     PICARD_ADDORREPLACEREADGROUPS(
         PICARD_MARKDUPLICATES.out.bam,
     )
-    ch_versions = ch_versions.mix(PICARD_ADDORREPLACEREADGROUPS.out.versions)
+    ch_versions = ch_versions.mix(PICARD_ADDORREPLACEREADGROUPS.out.versions.first())
 
     BAM_SORT_STATS_SAMTOOLS(
         PICARD_ADDORREPLACEREADGROUPS.out.bam,
