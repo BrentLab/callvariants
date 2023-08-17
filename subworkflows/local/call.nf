@@ -53,6 +53,7 @@ workflow CALL {
         cnvpytor_tiddit_input.bwa_index
     )
     ch_versions = ch_versions.mix(TIDDIT_SV.out.versions)
+    ch_reports = ch_reports.mix(TIDDIT_SV.out.ploidy.map{ it -> it[1]})
 
     // zip, index and add the key 'variant_caller' to the meta
     TABIX_BGZIPTABIX_TIDDIT(
@@ -207,7 +208,7 @@ workflow CALL {
         snpeff_db
     )
     ch_versions = ch_versions.mix(SNPEFF.out.versions)
-    ch_reports = ch_reports.mix(SNPEFF.out.report)
+    ch_reports = ch_reports.mix(SNPEFF.out.report.map{ it -> it[1]})
 
     TABIX_BGZIPTABIX_RAW(SNPEFF.out.vcf)
 
@@ -220,7 +221,7 @@ workflow CALL {
         [[],[]]
     )
     ch_versions = ch_versions.mix(BCFTOOLS_STATS_RAW.out.versions)
-    ch_reports = ch_reports.mix(BCFTOOLS_STATS_RAW.out.stats)
+    ch_reports = ch_reports.mix(BCFTOOLS_STATS_RAW.out.stats.map{it -> it[1]})
 
     // filter the VCFs
     // TODO: SPLIT THIS INTO A INDIVIDUAL AND JOINT TO PROVIDE
@@ -242,7 +243,7 @@ workflow CALL {
         [[],[]],
         [[],[]]
     )
-    ch_reports = ch_reports.mix(BCFTOOLS_STATS_FLTR.out.stats)
+    ch_reports = ch_reports.mix(BCFTOOLS_STATS_FLTR.out.stats.map{ it -> it[1]})
 
     emit:
     vcf = VCFTOOLS.out.vcf   // channel: [val(meta), path(vcf) ]
