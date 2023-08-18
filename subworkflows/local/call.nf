@@ -7,7 +7,8 @@ include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_FLTR     } from '../../modules/nf
 include { GATK4_MERGEVCFS as GATK4_MERGEVCFS_INDIVIDUAL } from "../../modules/nf-core/gatk4/mergevcfs/main"
 include { GATK4_MERGEVCFS as GATK4_MERGEVCFS_JOINT      } from "../../modules/nf-core/gatk4/mergevcfs/main"
 include { CNVPYTOR_COMPLETE                             } from "./cnvpytor_complete.nf"
-include { SNPEFF                                        } from '../../modules/nf-core/snpeff/snpeff/main'
+include { SNPEFF as SNPEFF_RAW                          } from '../../modules/nf-core/snpeff/snpeff/main'
+include { SNPEFF as SNPEFF_FLTR                         } from '../../modules/nf-core/snpeff/snpeff/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_RAW          } from "../../modules/nf-core/bcftools/stats/main"
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FLTR         } from "../../modules/nf-core/bcftools/stats/main"
 include { VCFTOOLS                                      } from "../../modules/nf-core/vcftools/main"
@@ -204,13 +205,13 @@ workflow CALL {
     //
     // Annotate the variants with snpEff
     //
-    SNPEFF(
+    SNPEFF_RAW(
         ch_all_vcfs.map{meta, vcf_gz, vcf_gz_tbi -> [meta, vcf_gz]},
         snpeff_config,
         snpeff_db
     )
-    ch_versions = ch_versions.mix(SNPEFF.out.versions.first())
-    ch_reports = ch_reports.mix(SNPEFF.out.report)
+    ch_versions = ch_versions.mix(SNPEFF_RAW.out.versions.first())
+    ch_reports = ch_reports.mix(SNPEFF_RAW.out.report)
 
     TABIX_BGZIPTABIX_RAW(SNPEFF.out.vcf)
 
@@ -236,6 +237,13 @@ workflow CALL {
     ch_versions   = ch_versions.mix(VCFTOOLS.out.versions.first())
 
     TABIX_BGZIPTABIX_FLTR( VCFTOOLS.out.vcf )
+
+    SNPEFF_FLTR(
+        TABIX_BGZIPTABIX_FLTR.out.map{meta, vcf_gz, vcf_gz_tbi -> [meta, vcf_gz]},
+        snpeff_config,
+        snpeff_db
+    )
+    ch_reports = ch_reports.mix(SNPEFF_FLTR.out.report)
 
     BCFTOOLS_STATS_FLTR(
         TABIX_BGZIPTABIX_FLTR.out.gz_tbi,
