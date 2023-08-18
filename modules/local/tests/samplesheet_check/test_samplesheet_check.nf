@@ -11,7 +11,7 @@
 
 nextflow.enable.dsl = 2
 
-include { validateParameters; paramsHelp; paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation@0.3.1'
+include { validateParameters; paramsHelp; paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation'
 
 // Validate input parameters
 validateParameters()
