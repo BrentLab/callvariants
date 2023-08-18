@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    mblab/callvariants
+    BrentLab/callvariants
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/mblab/callvariants
+    Github : https://github.com/BrentLab/callvariants
 ----------------------------------------------------------------------------------------
 */
 
@@ -15,13 +15,13 @@ nextflow.enable.dsl = 2
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { validateParameters; paramsHelp } from 'plugin/nf-validation'
+include { validateParameters; paramsHelp } from 'plugin/nf-validation@0.3.1'
 
 // Print help message if needed
 if (params.help) {
     def logo = NfcoreTemplate.logo(workflow, params.monochrome_logs)
     def citation = '\n' + WorkflowMain.citation(workflow) + '\n'
-    def String command = "nextflow run ${workflow.manifest.name} --input samplesheet.csv --genome GRCh37 -profile docker"
+    def String command = "nextflow run BrentLab/callvariants -profile <htcf,ris,kn99_haploid,genotype_check,bsa> -r main --input samplesheet.csv --fasta /path/to/genome.fa --outdir results"
     log.info logo + paramsHelp(command) + citation + NfcoreTemplate.dashedLine(params.monochrome_logs)
     System.exit(0)
 }
@@ -42,7 +42,7 @@ WorkflowMain.initialise(workflow, params, log)
 include { CALLVARIANTS } from './workflows/callvariants'
 
 //
-// WORKFLOW: Run main mblab/callvariants analysis pipeline
+// WORKFLOW: Run main BrentLab/callvariants analysis pipeline
 //
 workflow MBLAB_CALLVARIANTS {
     CALLVARIANTS ()

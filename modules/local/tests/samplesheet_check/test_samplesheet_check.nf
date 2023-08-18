@@ -2,16 +2,16 @@
 
 // usage:
 // nextflow run \
-// ~/code/mblab_call_variants/modules/local/tests/samplesheet_check/test_samplesheet_check.nf \
-// -c ~/code/mblab_call_variants/modules/local/tests/samplesheet_check/test.conf \
+// ~/code/BrentLab_call_variants/modules/local/tests/samplesheet_check/test_samplesheet_check.nf \
+// -c ~/code/BrentLab_call_variants/modules/local/tests/samplesheet_check/test.conf \
 // --samplesheet_path \
-// ~/code/mblab_call_variants/assets/bsa_samplesheet.csv \
+// ~/code/BrentLab_call_variants/assets/bsa_samplesheet.csv \
 // --outdir results
 
 
 nextflow.enable.dsl = 2
 
-include { validateParameters; paramsHelp; paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation'
+include { validateParameters; paramsHelp; paramsSummaryLog; paramsSummaryMap; fromSamplesheet } from 'plugin/nf-validation@0.3.1'
 
 // Validate input parameters
 validateParameters()

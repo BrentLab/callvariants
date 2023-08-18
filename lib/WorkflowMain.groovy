@@ -1,5 +1,5 @@
 //
-// This file holds several functions specific to the main.nf workflow in the mblab/callvariants pipeline
+// This file holds several functions specific to the main.nf workflow in the BrentLab/callvariants pipeline
 //
 
 import nextflow.Nextflow

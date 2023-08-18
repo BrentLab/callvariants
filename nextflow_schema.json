@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/mblab/callvariants/master/nextflow_schema.json",
-    "title": "mblab/callvariants pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/BrentLab/callvariants/master/nextflow_schema.json",
+    "title": "BrentLab/callvariants pipeline parameters",
     "description": "a variant caller intended for both genotype checks and BSA data processing for the Brent and Doering labs",
     "type": "object",
     "definitions": {
@@ -13,34 +13,48 @@
             "properties": {
                 "cnvpytor_conf_file": {
                     "type": "string",
-                    "format": "file-path"
+                    "format": "file-path",
+                    "description": "Path to the cnvpytor configuration file. This is not necessary for the cnvpytor default configured organisms. For KN99, one is available in assets/genome_files. This is set automatically in the kn99_haploid profile",
+                    "hidden": true
                 },
                 "cnvpytor_gc_file": {
                     "type": "string",
-                    "format": "file-path"
+                    "format": "file-path",
+                    "description": "Path to the cnvpytor GC file. This is not necessary for the organisms configured by default in cnvpytor. One for KN99 is available in assets/genome_files and is set automatically in the kn99_haploid profile",
+                    "hidden": true
                 },
                 "snpeff_db_config": {
                     "type": "string",
-                    "format": "file-path"
+                    "format": "file-path",
+                    "description": "snpEff config file. This is not necessary for the organisms configured by default in snpeff. A config file suitable for KN99 is provided in assets/genome_files. This is set in the kn99_haploid profile",
+                    "hidden": true
                 },
                 "snpeff_config_key": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The organism key in the snpEff config. This is set in the kn99_haploid profile for KN99",
+                    "hidden": true
                 },
                 "snpeff_db": {
                     "type": "string",
-                    "format": "directory-path"
+                    "format": "directory-path",
+                    "description": "Path to the snpEff database. This is not necessary for organisms configured by default in snpEff. A database for KN99 exists in assets/genome_files and is set automatically in the KN99_haploid profile",
+                    "hidden": true
                 },
                 "region_bed_mask": {
                     "type": "string",
-                    "format": "file-path"
+                    "format": "file-path",
+                    "description": "Path to a bed file of regions to filter (remove) from the filtered variant calls. A file made by daniel, probably with NCBI dustmask, is in assets/genome files. This is set in the kn99_haploid profile. However, no information exists on how this file was actually created -- the command, version, etc was not recorded",
+                    "hidden": true
                 },
                 "call_individual_variants": {
                     "type": "boolean",
-                    "default": true
+                    "default": true,
+                    "description": "By defualt, true. Set this to false to avoid calling variants on individual samples. For instance, for BSA, you may not care to call variants on the individual samles and instead only call variants jointly"
                 },
                 "call_joint_variants": {
                     "type": "boolean",
-                    "default": true
+                    "default": true,
+                    "description": "By default, true, Set to false to avoid calling variants jointly, within samplesheet group"
                 }
             }
         },
@@ -73,25 +87,34 @@
                     "description": "Email address for completion summary.",
                     "fa_icon": "fas fa-envelope",
                     "help_text": "Set this parameter to your e-mail address to get a summary e-mail with details of the run sent to you when the workflow exits. If set in your user config file (`~/.nextflow/config`) then you don't need to specify this on the command line for every run.",
-                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$"
+                    "pattern": "^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",
+                    "hidden": true
                 },
                 "multiqc_title": {
                     "type": "string",
                     "description": "MultiQC report title. Printed as page header, used for filename if not otherwise specified.",
-                    "fa_icon": "fas fa-file-signature"
+                    "fa_icon": "fas fa-file-signature",
+                    "hidden": true
                 },
                 "save_intermediates": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "Set this flag to save intermediate outputs, eg un-zipped and indexed vcf files from TIDDIT."
                 },
                 "debug": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "When save_intermediates is set to true, some steps still will not output. Set debug, inaddition to save_intermediates, to save absolutely all of the output"
                 },
                 "save_reference": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "description": "Set this to true to save the reference genome in the pipeline `outdir`. This is useful when you include additional fasta files"
                 },
                 "platform": {
                     "type": "string",
-                    "default": "platform_not_set"
+                    "default": "platform_not_set",
+                    "hidden": true,
+                    "description": "Name of the sequencing machine used to produce the raw data"
                 }
             }
         },
@@ -112,7 +135,10 @@
                     "fa_icon": "far fa-file-code"
                 },
                 "fasta_fai": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "Path to the fasta fai index file. Note that this is not currently used since in the case of samples with additional fasta files the indicies need to be re-made.",
+                    "hidden": true,
+                    "format": "file-path"
                 }
             }
         },
@@ -137,11 +163,13 @@
                 },
                 "config_profile_contact": {
                     "type": "string",
-                    "description": "Instutional configuration profile contact"
+                    "description": "Instutional configuration profile contact",
+                    "hidden": true
                 },
                 "config_profile_url": {
                     "type": "string",
-                    "description": "Institutional proflie documentation url"
+                    "description": "Institutional proflie documentation url",
+                    "hidden": true
                 }
             }
         },
@@ -180,7 +208,9 @@
                 },
                 "nucleotides_per_second": {
                     "type": "integer",
-                    "default": 1000
+                    "default": 1000,
+                    "hidden": true,
+                    "description": "This controls how many parts the alignment files are split into for variant calling processing. Increease the number to decrease the number of splits"
                 }
             }
         },
@@ -263,7 +293,8 @@
                 "multiqc_methods_description": {
                     "type": "string",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
-                    "fa_icon": "fas fa-cog"
+                    "fa_icon": "fas fa-cog",
+                    "hidden": true
                 },
                 "validate_params": {
                     "type": "boolean",

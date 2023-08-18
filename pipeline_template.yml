@@ -1,4 +1,4 @@
-prefix: mblab
+prefix: BrentLab
 skip:
 - github
 - ci

@@ -1,6 +1,6 @@
 {
-    "name": "mblab/callvariants",
-    "homePage": "https://github.com/mblab/callvariants",
+    "name": "BrentLab/callvariants",
+    "homePage": "https://github.com/BrentLab/callvariants",
     "repos": {
         "https://github.com/nf-core/modules.git": {
             "modules": {

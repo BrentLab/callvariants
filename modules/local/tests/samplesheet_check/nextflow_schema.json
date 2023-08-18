@@ -1,7 +1,7 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/mblab/callvariants/master/nextflow_schema.json",
-    "title": "mblab/callvariants pipeline parameters",
+    "$id": "https://raw.githubusercontent.com/BrentLab/callvariants/master/nextflow_schema.json",
+    "title": "BrentLab/callvariants pipeline parameters",
     "description": "a variant caller intended for both genotype checks and BSA data processing for the Brent and Doering labs",
     "type": "object",
     "definitions": {
