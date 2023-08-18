@@ -213,7 +213,7 @@ workflow CALL {
     ch_versions = ch_versions.mix(SNPEFF_RAW.out.versions.first())
     ch_reports = ch_reports.mix(SNPEFF_RAW.out.report)
 
-    TABIX_BGZIPTABIX_RAW(SNPEFF.out.vcf)
+    TABIX_BGZIPTABIX_RAW(SNPEFF_RAW.out.vcf)
 
     BCFTOOLS_STATS_RAW(
         TABIX_BGZIPTABIX_RAW.out.gz_tbi,
