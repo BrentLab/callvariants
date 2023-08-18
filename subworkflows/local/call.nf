@@ -239,7 +239,7 @@ workflow CALL {
     TABIX_BGZIPTABIX_FLTR( VCFTOOLS.out.vcf )
 
     SNPEFF_FLTR(
-        TABIX_BGZIPTABIX_FLTR.out.map{meta, vcf_gz, vcf_gz_tbi -> [meta, vcf_gz]},
+        TABIX_BGZIPTABIX_FLTR.out.vcf.map{meta, vcf_gz, vcf_gz_tbi -> [meta, vcf_gz]},
         snpeff_config,
         snpeff_db
     )
