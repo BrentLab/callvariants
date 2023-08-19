@@ -3,24 +3,40 @@
 
 ## Introduction
 
-For most users, a combination of the pre-configured profiles, the input
-samplesheet, and an output directory name are the only required parameters.
+For most users, the following parameters are all that will be required to
+run the pipeline:
 
-## Samplesheet input
+- `-r main`: the `-r` flag refers to the version of the pipeline to use. By
+setting `main`, you will ensure that you are using the most current revision
+- `-profile`: [profiles](#profile) are built-in configurations. This is not
+required, but most users of this pipeline will use a combination of
+`kn99_haploid`, `htcf` or `ris` and `genotype_check` or `bsa`. For example,
+if you are doing a genotype check on samples on RIS, and the samples are
+haploid KN99, then you'd use `-profile ris,kn99_haploid,genotype_check`
+    - **note** if you are using the `ris` profile, you are required to set
+    additional parameters. See
+    [here](https://github.com/nf-core/configs/blob/master/docs/wustl_ris.md)
+- `--input`: a path to the input [samplesheet](#samplesheet-input)
+- `--outdir`: name of the output directory
 
-You will need to create a samplesheet with information about the samples you
-would like to analyse before running the pipeline. Use this parameter to
-specify its location. It has to be a comma-separated file with 3 columns,
-and a header row as shown in the examples below.
+A full command will look like this:
 
 ```bash
---input '[path to samplesheet file]'
+nextflow run BrentLab/callvariants \
+   -r main \
+   -profile <htcf,ris,kn99_haploid,genotype_check,bsa> \
+   --input samplesheet.csv \
+   --outdir <OUTDIR>
 ```
+**Note**: if you are not using the `kn99_haploid` profile, there are some
+additional required parameters.
 
-### Full samplesheet
+## Samplesheet
 
-The samplesheet must be a csv file. Each row in the samplesheet represents a
-library. An example is shown below.
+Before running the pipeline, you will need to create a samplesheet with
+information about the samples you would like to analyze. The samplesheet must
+be a csv file. Each row in the samplesheet represents a library.
+An example is shown below.
 
 ```csv
 sample,group,genome_name,fastq_1,fastq_2,additional_fasta
@@ -107,15 +123,14 @@ or module arguments (args).
 The above pipeline run specified with a params file in yaml format:
 
 ```bash
-nextflow run BrentLab/callvariants -profile docker -params-file params.yaml
+nextflow run BrentLab/callvariants -profile ris,kn99_haploid,genotype_check -params-file params.yaml
 ```
 
 with `params.yaml` containing:
 
 ```yaml
 input: './samplesheet.csv'
-outdir: './results/'
-genome: 'GRCh37'
+outdir: 'results'
 <...>
 ```
 

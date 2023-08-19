@@ -4,103 +4,76 @@
 It runs Freebayes, TIDDIT and CNVpytor for SNP/INDEL and structural variant
 calling.
 
-This has been developed with specific functionality in mind. These are:
+This workflow has been developed with the following specific functionality
+in mind:
 
-1. Checking the genotype of KN99alpha samples
-    - This is performed by providing additional sequences to be appended to the
+- Checking the genotype of KN99alpha samples
+  - This is performed by providing additional sequences to be appended to the
     genome prior to alignment in a per-smaple basis
-2. Processing *c. neoformans* samples for bulk segregant analysis
-    - The Freebayes step can optionally be used to jointly call variants on
+- Processing *c. neoformans* samples for bulk segregant analysis
+  - The Freebayes step can optionally be used to jointly call variants on
     groups which are identified in the input samplesheet
+
+But there is no reason why it is limited to these applications.
 
 The pipeline, overall, runs the following processes:
 
 1. Prepare the Genome
-    1. Concatenate additional sequences provided in the input samplesheet,
+    - Concatenate additional sequences provided in the input samplesheet,
     if there are any
-    1. Create indicies
-        1. [samtools faidx](http://www.htslib.org/doc/samtools-faidx.html)
-        1. [bwamem2 index](https://github.com/bwa-mem2/bwa-mem2)
-        1. [bwa index](https://github.com/lh3/bwa) -- this is for TIDDIT
-    1. Create sequence maps
-        1. [build](modules/local/build_intervals/main.nf) and
+    - Create indicies
+        - [samtools faidx](http://www.htslib.org/doc/samtools-faidx.html)
+        - [bwamem2 index](https://github.com/bwa-mem2/bwa-mem2)
+        - [bwa index](https://github.com/lh3/bwa) -- this is for TIDDIT
+    - Create sequence maps
+        - [build](modules/local/build_intervals/main.nf) and
         [create](modules/local/create_intervals_bed/main.nf) intervals.
         Both of these are from [sarek](https://github.com/nf-core/sarek)
-        1. [GATK CreateSequenceDictionary](https://gatk.broadinstitute.org/hc/en-us/articles/360036712531-CreateSequenceDictionary-Picard-)
-    1. Read QC ([fastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/))
-    1. Align reads
-        1. [bwamem2](https://github.com/bwa-mem2/bwa-mem2)
-        1. [picard MarkDuplicates](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-)
-        1. [picard AddOrReplaceReadGroup](https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups)
-        1. [samtools](https://samtools.github.io/) index, sort, stats, flatstats, idxstats
-    1. Call Variants
-        1. [Freebayes](https://github.com/freebayes/freebayes)
-        1. [TIDDIT](https://github.com/SciLifeLab/TIDDIT)
-        1. [CNVpytor](https://github.com/abyzovlab/CNVpytor)
-        1. [snpEff](https://pcingola.github.io/SnpEff/)
-        1. [vcftools](https://vcftools.github.io/) for filtering
-        1. [bcftools](https://samtools.github.io/bcftools/bcftools.html) stats
-1. Present QC for raw reads ([`MultiQC`](http://multiqc.info/))
+        - [GATK CreateSequenceDictionary](https://gatk.broadinstitute.org/hc/en-us/articles/360036712531-CreateSequenceDictionary-Picard-)
+1. Read QC
+    - [fastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+1. Align reads
+    - [bwamem2](https://github.com/bwa-mem2/bwa-mem2)
+    - [picard MarkDuplicates](https://gatk.broadinstitute.org/hc/en-us/articles/360037052812-MarkDuplicates-Picard-)
+    - [picard AddOrReplaceReadGroup](https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups)
+    - [samtools](https://samtools.github.io/) index, sort, stats, flatstats, idxstats
+1. Call Variants
+    - [Freebayes](https://github.com/freebayes/freebayes)
+    - [TIDDIT](https://github.com/SciLifeLab/TIDDIT)
+    - [CNVpytor](https://github.com/abyzovlab/CNVpytor)
+    - [snpEff](https://pcingola.github.io/SnpEff/)
+    - [vcftools](https://vcftools.github.io/) for filtering
+    - [bcftools](https://samtools.github.io/bcftools/bcftools.html) stats
+1. Collect and present QC
+    - [MultiQC](http://multiqc.info/)
 
-## Usage
+## [Usage](docs/usage.md)
 
-> **Note**
-> If you are new to Nextflow and nf-core, please refer to [this page](https://nf-co.re/docs/usage/installation) on how
-> to set-up Nextflow. Make sure to [test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline)
-> with `-profile test` before running the workflow on actual data.
+If you are new to Nextflow and nf-core, please refer to
+[this page](https://nf-co.re/docs/usage/installation) on how to set-up
+Nextflow. Make sure to
+[test your setup](https://nf-co.re/docs/usage/introduction#how-to-run-a-pipeline)
+with `-profile test` before running the workflow on actual data.
+If you are running this test on WUSTL HTCF or RIS, use one of the built-in
+[profiles](docs/usage.md#profile), either `htcf` or `ris`. If you are running
+the test on a different host, then you may consider including one of the
+dependency manager profiles, eg `singularity` or `docker`.
 
-First, prepare a samplesheet with your input data that looks as follows:
-
-`samplesheet.csv`:
-
-```csv
-sample,group,genome_name,fastq_1,fastq_2,additional_fasta
-A1-35-8,1,add_seq1,/path/to/A1-35-8_R1.fastq.gz,/path/to/A1-35-8_R2.fastq.gz,/path/to/additional_sequence1.fa
-A1-102-8,1,add_seq1,/path/to/A1-102-8_R1.fastq.gz,,/path/to/additional_sequence1.fa
-A1-17-8,1,main,/path/to/A1-17-8_R1.fastq.gz,/path/to/A1-17-8_R2.fastq.gz,
-```
-
-Each row represents a library. Libraries can be single-end (for example, row 2)
-or paired-end (row 1 and 3). Each library must be assigned a group -- here,
-simply denoted `1`, but this could be anything (no spaces). Next, we need to
-specify a genome_name. I suggest using `main` for libraries which do not have
-any additional fasta files (row 3 is an example of this).
-
-Now, you can run the pipeline using a command similar to the following
+A test run for `ris`, for example, would look like this:
 
 ```bash
-nextflow run BrentLab/callvariants \
-   -r main \
-   -profile <htcf,ris,kn99_haploid,genotype_check,bsa> \
-   -c /path/to/local.config \
-   --input samplesheet.csv \
-   --fasta /path/to/genome.fa \
-   --outdir <OUTDIR>
+nextflow run BrentLab/callvariants -r main -profile ris,test
 ```
+you will need to submit this appropriately, but no other input is necessary
+to run the tests -- all input is taken care of by the `test` profile
 
-The pipeline will be automatically pulled from github by using
-`BrentLab/callvariants`. You need to include the `-r main` flag in order to
-tell nextflow that it should use the main branch (this will be the most
-current). You may wish to use a specific version, eg `-r 1.0.0` for
-consistency over batches, however.
+For detailed instructions on running your own data, please see the
+[**usage documentation**](docs/usage.md)
 
-The `-profile` flag can be used to select a pre-configured set of parameters.
-Mulitple profiles can be selected, for example
-`-profile ris,genotype_check,kn99_haploid`.
+## [Output](docs/output.md)
 
-The `-c /path/to/local.config` flag is the path to a local configuration file.
-This may be necessary to further configure your environment on your specific
-machine. It is also possible that this is not necessary and may be omitted.
-
-The `--input`, `--fasta` and `--outdir` are required arguments to the workflow.
-You can use `nextflow run BrentLab/callvariants -r main --help` for more
-information on the input parameters, or you can
-[read about the input parameters here](docs/params.md)
-
-> **Warning:**
-> Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those
-> provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_;
-> see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
+For a description of the output directory, please see the
+[**output documentation**](docs/output.md)
 
 ## Credits
 
