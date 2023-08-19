@@ -109,7 +109,7 @@ workflow CALLVARIANTS {
     //
     ch_input = Channel.fromSamplesheet("input")
         .multiMap{ sample, group, genome_name, fastq_1, fastq_2, additional_fasta ->
-            def single_end = fastq_2.length() == 0
+            def single_end = fastq_2.size() == 0
             def reads = single_end ? [fastq_1] : [fastq_1, fastq_2]
             reads: [["id": sample,
                      "group": group,
