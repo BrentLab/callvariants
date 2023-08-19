@@ -75,6 +75,30 @@ For detailed instructions on running your own data, please see the
 For a description of the output directory, please see the
 [**output documentation**](docs/output.md)
 
+## Common problems
+
+A pernicious error is the character that symbolizes a "new line" in a file. We
+never see these characters, but they of course exist -- how else would the
+computer know where the new line is?
+
+Mac, Windows and Linux operating systems use different carriage return
+characters, unfortunately. If you're using a cluster to process your data,
+you need to make sure that the files are linux compliant. All of the files you
+download from NCBI or fungiDB, for instance, will be, as will your fastq files
+from the sequencer centers. But, if you create an additional fasta file, you
+need to make sure that this hasn't been adulterated by Mac or Windows. I would
+expect that snapgene would by default output a linux compliant fasta file. But
+if you were to open the file in something like word, it would probably convert
+the characters.
+
+One tool you can use to ensure that your input files are linux compliant is
+[dos2unix](https://dos2unix.sourceforge.io/). Using `dos2unix` looks like this:
+
+```bash
+dos2unix </path/to/file.<ext>>
+```
+and the file will be changed in-place.
+
 ## Credits
 
 BrentLab/callvariants was originally written by Chase Mateusiak. It is based on
