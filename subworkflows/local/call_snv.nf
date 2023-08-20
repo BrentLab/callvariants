@@ -30,7 +30,6 @@ workflow CALL {
     ch_individual_collected_freebayes_vcfs = Channel.empty()
     ch_all_vcfs                            = Channel.empty()
 
-
     // if call_individual_variants is true, then use freebayes to call
     // variants individually
     if (params.call_individual_variants){
@@ -74,7 +73,7 @@ workflow CALL {
         // merge
         GATK4_MERGEVCFS_INDIVIDUAL(
             ch_individual_collected_freebayes_vcfs,
-            freebayes_individual_input.sequence_dict
+            [[],[]]
         )
         ch_versions = ch_versions.mix(GATK4_MERGEVCFS_INDIVIDUAL.out.versions.first())
 
@@ -144,7 +143,7 @@ workflow CALL {
         // merge
         GATK4_MERGEVCFS_JOINT(
             ch_joint_collected_freebayes_vcfs,
-            freebayes_joint_input.sequence_dict
+            [[],[]]
         )
         ch_versions = ch_versions.mix(GATK4_MERGEVCFS_JOINT.out.versions.first())
 

@@ -185,7 +185,6 @@ workflow CALLVARIANTS {
     //
     CALL_SV (
         ch_bam_bai_with_genome_data,
-        ch_bam_bai_with_genome_data_interval_split,
         ch_region_bed_mask,
         cnvpytor_genome_conf_ch,
         cnvpytor_genome_gc_ch,
