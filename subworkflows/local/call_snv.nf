@@ -1,12 +1,9 @@
 include { FREEBAYES as FREEBAYES_INDIVIDUAL             } from "../../modules/nf-core/freebayes/main"
 include { FREEBAYES_JOINT                               } from "../../modules/local/freebayes_joint/main"
-include { TIDDIT_SV                                     } from "../../modules/nf-core/tiddit/sv/main"
-include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_TIDDIT   } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_RAW      } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_FLTR     } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { GATK4_MERGEVCFS as GATK4_MERGEVCFS_INDIVIDUAL } from "../../modules/nf-core/gatk4/mergevcfs/main"
 include { GATK4_MERGEVCFS as GATK4_MERGEVCFS_JOINT      } from "../../modules/nf-core/gatk4/mergevcfs/main"
-include { CNVPYTOR_COMPLETE                             } from "./cnvpytor_complete.nf"
 include { SNPEFF as SNPEFF_RAW                          } from '../../modules/nf-core/snpeff/snpeff/main'
 include { SNPEFF as SNPEFF_FLTR                         } from '../../modules/nf-core/snpeff/snpeff/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_RAW          } from "../../modules/nf-core/bcftools/stats/main"
@@ -19,7 +16,6 @@ workflow CALL {
     // bam_bai_with_genome_data is one entry per sample
 
     take:
-    bam_bai_with_genome_data  //  [meta, bam, bai, path(genome), path(fai), path(bwamem2_index), path(bwa_index), path(genome_dict), path(intervals_bed)]
     bam_bai_with_genome_data_interval_split  //  [meta, bam, bai, path(genome), path(fai), path(bwamem2_index), path(bwa_index), path(genome_dict), path(intervals_bed), path(interval_subset)]
     region_bed_mask
     cnvpytor_genome_conf
@@ -34,48 +30,6 @@ workflow CALL {
     ch_individual_collected_freebayes_vcfs = Channel.empty()
     ch_all_vcfs                            = Channel.empty()
 
-
-    // Setup input for cnpytor and TIDDIT
-    bam_bai_with_genome_data
-        .multiMap{ it ->
-            bam_bai: [it[0], it[1], it[2]]
-            genome: [it[0], it[3]]
-            bwa_index: [it[0], it[6]]
-        }
-        .set{ cnvpytor_tiddit_input }
-
-    //
-    // TIDDIT is a structural variant caller. It can call discordant pairs
-    // and CNV
-    //
-    TIDDIT_SV(
-        cnvpytor_tiddit_input.bam_bai,
-        cnvpytor_tiddit_input.genome,
-        cnvpytor_tiddit_input.bwa_index
-    )
-    ch_versions = ch_versions.mix(TIDDIT_SV.out.versions.first())
-    ch_reports = ch_reports.mix(TIDDIT_SV.out.ploidy.map{ it -> it[1]})
-
-    // zip, index and add the key 'variant_caller' to the meta
-    TABIX_BGZIPTABIX_TIDDIT(
-        TIDDIT_SV.out.vcf
-            .map{ meta, vcf ->
-                def new_meta = meta.clone()
-                new_meta.variant_caller = 'tiddit'
-                [new_meta, vcf] } )
-    ch_versions = ch_versions.mix(TABIX_BGZIPTABIX_TIDDIT.out.versions.first())
-
-    ch_all_vcfs = ch_all_vcfs.mix(TABIX_BGZIPTABIX_TIDDIT.out.gz_tbi)
-
-    //
-    // Call CNVs with CNVpytor
-    //
-    CNVPYTOR_COMPLETE(
-        cnvpytor_tiddit_input.bam_bai,
-        cnvpytor_genome_conf,
-        cnvpytor_genome_gc_ch
-    )
-    ch_versions = ch_versions.mix(CNVPYTOR_COMPLETE.out.versions)
 
     // if call_individual_variants is true, then use freebayes to call
     // variants individually
@@ -101,7 +55,7 @@ workflow CALL {
             [],
             []
         )
-        ch_versions   = ch_versions.mix(FREEBAYES_INDIVIDUAL.out.versions.first())
+        ch_versions = ch_versions.mix(FREEBAYES_INDIVIDUAL.out.versions.first())
 
         // combine chunks into a single channel
         FREEBAYES_INDIVIDUAL.out.vcf

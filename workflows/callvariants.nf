@@ -37,7 +37,8 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 include { PREPARE_GENOME } from "${projectDir}/subworkflows/local/prepare_genome"
 include { ALIGN          } from "${projectDir}/subworkflows/local/align"
-include { CALL           } from "${projectDir}/subworkflows/local/call"
+include { CALL_SV        } from "${projectDir}/subworkflows/local/call_sv"
+include { CALL_SNV       } from "${projectDir}/subworkflows/local/call_snp"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,7 +183,7 @@ workflow CALLVARIANTS {
     //
     // SUBWORKFLOW: Call variants using CNVpytor, TIDDIT and Freebayes
     //
-    CALL (
+    CALL_SV (
         ch_bam_bai_with_genome_data,
         ch_bam_bai_with_genome_data_interval_split,
         ch_region_bed_mask,
@@ -191,8 +192,22 @@ workflow CALLVARIANTS {
         ch_snpeff_config,
         ch_snpeff_db
     )
-    ch_reports = ch_reports.mix(CALL.out.reports)
-    ch_versions = ch_versions.mix(CALL.out.versions)
+    ch_reports = ch_reports.mix(CALL_SV.out.reports)
+    ch_versions = ch_versions.mix(CALL_SV.out.versions)
+
+    //
+    // SUBWORKFLOW: Call small nucleotide variants
+    //
+    CALL_SNV (
+        ch_bam_bai_with_genome_data_interval_split,
+        ch_region_bed_mask,
+        cnvpytor_genome_conf_ch,
+        cnvpytor_genome_gc_ch,
+        ch_snpeff_config,
+        ch_snpeff_db
+    )
+    ch_reports = ch_reports.mix(CALL_SNV.out.reports)
+    ch_versions = ch_versions.mix(CALL_SNV.out.versions)
 
     //
     // MODULE: MultiQC
