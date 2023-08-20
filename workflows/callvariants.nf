@@ -38,7 +38,7 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 include { PREPARE_GENOME } from "${projectDir}/subworkflows/local/prepare_genome"
 include { ALIGN          } from "${projectDir}/subworkflows/local/align"
 include { CALL_SV        } from "${projectDir}/subworkflows/local/call_sv"
-include { CALL_SNV       } from "${projectDir}/subworkflows/local/call_snp"
+include { CALL_SNV       } from "${projectDir}/subworkflows/local/call_snv"
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

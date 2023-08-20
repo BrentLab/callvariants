@@ -10,7 +10,7 @@ include { BCFTOOLS_STATS as BCFTOOLS_STATS_RAW          } from "../../modules/nf
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_FLTR         } from "../../modules/nf-core/bcftools/stats/main"
 include { VCFTOOLS                                      } from "../../modules/nf-core/vcftools/main"
 
-workflow CALL {
+workflow CALL_SNV {
     // note that bam_bai_with_genome_data_interval_split has one entry for
     // each of the intervals generated in PREPARE_GENOME.
     // bam_bai_with_genome_data is one entry per sample
