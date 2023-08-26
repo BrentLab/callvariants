@@ -190,3 +190,22 @@ good documentation on how this is calculated. Additionally, in the `tiddit`
 subdirectory, there is a bed file with coverage across some bin width. By
 default, the binwidth is 500. In the kn99_haploid profile, it is set to 10000.
 This can be used to more manually examine read depth and possible CNV events.
+Since CNVpytor is somewhat challenging to use and not terribly clear in what
+it is doing, the tiddit `.bed` coverage file can be used as a quick sanity
+check. Here is an example of parsing the bed file, using R:
+
+```R
+library(tidyverse)
+
+cov_df = read_tsv("/path/to/results/raw/tiddit/<sample>_tiddit.bed")
+
+filtered_cov_df = cov_df %>%
+    group_by(`#chromosome`) %>%
+    mutate(mean_coverage = mean(coverage)) %>%
+    ungroup() %>%
+    mutate(normalized_coverage = coverage / mean_coverage) %>%
+    select(-mean_coverage) %>%
+    filter(normalized_coverage > 1.7 | normalized_coverage < .1)
+
+view(filtered_cov_df)
+```
