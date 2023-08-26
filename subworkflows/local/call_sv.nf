@@ -1,4 +1,5 @@
 include { TIDDIT_SV                                     } from "../../modules/nf-core/tiddit/sv/main"
+include { TIDDIT_COV                                    } from '../../modules/nf-core/tiddit/cov/main'
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_TIDDIT   } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_RAW      } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_FLTR     } from '../../modules/nf-core/tabix/bgziptabix/main'
@@ -39,8 +40,17 @@ workflow CALL_SV {
         .set{ cnvpytor_tiddit_input }
 
     //
-    // TIDDIT is a structural variant caller. It can call discordant pairs
-    // and CNV
+    // TIDDIT coverage mode
+    //
+    TIDDIT_COV(
+        cnvpytor_tiddit_input.bam_bai.map{ meta, bam, bai -> [meta, bam]},
+        cnvpytor_tiddit_input.genome
+    )
+    ch_versions = ch_versions.mix(TIDDIT_COV.out.versions.first())
+    ch_reports = ch_reports.mix(TIDDIT_COV.out.cov.map{ it -> it[1]})
+
+    //
+    // TIDDIT discordant pair and other SV mode
     //
     TIDDIT_SV(
         cnvpytor_tiddit_input.bam_bai,

@@ -185,4 +185,8 @@ that are presented in the the top level.
 **IMPORTANT**: in the subdirectory `tiddit`, if `save_intermediates` is true,
 there will be `vcf` files. But, more importantly, there will *always* be a file
 called `<sample or group>_tiddit.ploidies.tab` which has the TIDDIT estimation
-of the ploidy of the sample over each contig in the genome file.
+of the ploidy of the sample over each contig in the genome file. There is not
+good documentation on how this is calculated. Additionally, in the `tiddit`
+subdirectory, there is a bed file with coverage across some bin width. By
+default, the binwidth is 500. In the kn99_haploid profile, it is set to 10000.
+This can be used to more manually examine read depth and possible CNV events.
