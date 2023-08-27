@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 A script to produce tsv output from CNVpytor using the python interface
 
