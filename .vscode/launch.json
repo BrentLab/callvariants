@@ -1,0 +1,22 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "cnvpytor_csv.py",
+			"type": "python",
+			"request": "launch",
+			"program": "${workspaceFolder}/bin/cnvpytor_csv.py",
+			"console": "internalConsole",
+			"justMyCode": true,
+            "args": ["--bams","tmp/AB2_sorted_markdups_tagged.bam",
+                     "--bins","100", "1000",
+                     "--prefix","AB2_sorted_markdups_tagged",
+                     "--min_cnv_depth_dup", "1.7",
+                     "--max_cnv_depth_del", "0.1",
+                     "--max_cores","8"]
+		}
+	]
+}

@@ -3,7 +3,8 @@ include { TIDDIT_COV                                    } from '../../modules/nf
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_TIDDIT   } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_RAW      } from '../../modules/nf-core/tabix/bgziptabix/main'
 include { TABIX_BGZIPTABIX as TABIX_BGZIPTABIX_FLTR     } from '../../modules/nf-core/tabix/bgziptabix/main'
-include { CNVPYTOR_COMPLETE                             } from "./cnvpytor_complete.nf"
+include { CNVPYTOR_CSV as CNVPYTOR_CSV_RAW              } from "../../modules/local/cnvpytor/csv/main"
+include { CNVPYTOR_CSV as CNVPYTOR_CSV_FLTR             } from "../../modules/local/cnvpytor/csv/main"
 include { SNPEFF as SNPEFF_RAW                          } from '../../modules/nf-core/snpeff/snpeff/main'
 include { SNPEFF as SNPEFF_FLTR                         } from '../../modules/nf-core/snpeff/snpeff/main'
 include { BCFTOOLS_STATS as BCFTOOLS_STATS_RAW          } from "../../modules/nf-core/bcftools/stats/main"
@@ -72,14 +73,23 @@ workflow CALL_SV {
     ch_all_vcfs = ch_all_vcfs.mix(TABIX_BGZIPTABIX_TIDDIT.out.gz_tbi)
 
     //
-    // Call CNVs with CNVpytor
+    // call CNVs unfiltered
     //
-    CNVPYTOR_COMPLETE(
+    CNVPYTOR_CSV_RAW(
         cnvpytor_tiddit_input.bam_bai,
         cnvpytor_genome_conf,
         cnvpytor_genome_gc_ch
     )
-    ch_versions = ch_versions.mix(CNVPYTOR_COMPLETE.out.versions)
+    ch_versions = ch_versions.mix(CNVPYTOR_CSV_RAW.out.versions)
+
+    //
+    // call CNVs filtered
+    // TODO in future, just parse the raw csv outputs
+    CNVPYTOR_CSV_FLTR(
+        cnvpytor_tiddit_input.bam_bai,
+        cnvpytor_genome_conf,
+        cnvpytor_genome_gc_ch
+    )
 
     //
     // Annotate the variants with snpEff

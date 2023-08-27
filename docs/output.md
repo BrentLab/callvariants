@@ -136,8 +136,16 @@ subdirectories, `cnvpytor`, `raw` and `filtered`.
 
 You are encouraged to go to the
 [CNVpytor documentation](https://github.com/abyzovlab/CNVpytor)
-to learn more. You can use the `.pytor` objects to explore the data, and
-created visualizations, according to their instructions.
+to learn more.
+
+Specifically, you can use the `.pytor` files in the cnvpytor output directory
+and follow along with their jupyter notebook to do things like visualize the
+depth information. [See here](https://github.com/abyzovlab/CNVpytor/blob/master/examples/PythonLibraryGuide.ipynb).
+If you discover that there are no calls in a given binwidth, you can try
+reducing the bin width, though it gets buggy below 1000. It may be useful to
+use the tiddit coverage output. See the [tiddit](#raw) output in the
+`variants/raw` output directory for a less fancy, more manual sound approach to
+exploring CNV. Though not statistically sound, it may still be enlightening.
 
 This will store the output of the cnvpytor variant calling process. If
 `save_intermediates` is set to true, then some of the intermediate steps'
