@@ -138,33 +138,22 @@ You are encouraged to go to the
 [CNVpytor documentation](https://github.com/abyzovlab/CNVpytor)
 to learn more.
 
-Specifically, you can use the `.pytor` files in the cnvpytor output directory
-and follow along with their jupyter notebook to do things like visualize the
-depth information. [See here](https://github.com/abyzovlab/CNVpytor/blob/master/examples/PythonLibraryGuide.ipynb).
-If you discover that there are no calls in a given binwidth, you can try
-reducing the bin width, though it gets buggy below 1000. It may be useful to
-use the tiddit coverage output. See the [tiddit](#raw) output in the
-`variants/raw` output directory for a less fancy, more manual sound approach to
-exploring CNV. Though not statistically sound, it may still be enlightening.
+There will be two types of files in the cnvpytor output.
 
-This will store the output of the cnvpytor variant calling process. If
-`save_intermediates` is set to true, then some of the intermediate steps'
-pytor files will be saved in corresponding subdirectories, eg `histogram` and
-`import_read_depth`. However, you will almost certainly only be interested in
-the files at the top level of this directory, which will be:
+- `.pytor` files are the object used by CNVpytor, and you can use these to
+manually explore the depth, including nice visualizations. See the python
+guide in the CNVpytor documentation
+[here](https://github.com/abyzovlab/CNVpytor/blob/master/examples/PythonLibraryGuide.ipynb).
 
-- `<sample>_filtered_<bin_width>_depthfiltered.tsv`: this has had any cnvpytor
-filters applied, *and* has been filtered according to a normalized depth. In
-the `kn99_haploid` profile, there is no additional filter, so the `_filter` and
-`_raw` are identical. **However**, the `_depthfiltered` file is filtered for
-only those records with normalized depth > 1.7x
-- `<sample>_filtered_<bin_width>.tsv`: this tsv file has been filtered
-according to the cnvpytor filter settings, but has *not* been filtered by
-normalized depth
-- `<sample>.pytor`: this is the object which is produced and used by CNVPytor
-- `<sample>_raw_<bin_width>.tsv`: this is a completely unfiltered set of
-CNVPytor results in `tsv` format.
-
+- `.csv` These are csv files which describe the depth variant regions. These
+are calculated over a set of bins (if you are using the kn99_haploid profile,
+these bins will be 100, 1000, 10000 and 100000) and there is a `csv` for each.
+There will also be `_filtered.csv` corresponding to the same calls if you are
+using the `kn99_haploid` profile. These have been filtered such that calls
+labelled `deletion` in the first column are only retained if the
+normalized_depth is greater than 1.7, records labelled `deletion` has less than
+0.1 normalized depth, or the record is something other than a `deletion` or
+`duplicate`.
 
 #### filtered
 
