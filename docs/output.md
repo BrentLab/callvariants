@@ -115,7 +115,7 @@ software used in the pipeline. For citations, please see the
 ### reference
 
 This will only exist when `save_reference` is set to true. In that case,
-at the top level the genomes used for alignment and their `.fai` files will
+this directory will hold the genomes used for alignment and their `.fai` files will
 exist. Genomes created by appending the `additional_fasta` from the samplesheet
 to the main genome will be named according to their `<genome_name>_concat`
 where `genome_name` is from the samplesheet. If `debug` is set to true, then
@@ -173,18 +173,21 @@ At the top level of this directory, there will be
 a `snpeff` subdirectory that will have `vcf` files only if `debug` is `true`.
 It will always have the `.txt` and `.html` snpeff reports. There will be
 a `bcftools_stats` subdirectory that will store the `.bcftools_stats.txt` QC
-reports on the raw files. Then, optionally and mostly by setting `debug`,
-there may be the subdirectories `freebayes` and `gatk4`. Note that in the
-`freebayes` subdirectory, the results of calling the variants on *chunks* will
-be stored. These are then collected by gatk4, and it is those collected files
-that are presented in the the top level.
+reports on the raw files. Optionally by setting `debug`, there may be the
+subdirectories `freebayes` and `gatk4`. Note that in the `freebayes` subdirectory,
+the results of calling the variants on *chunks* will be stored. These are then
+collected by gatk4, and it is those collected files that are presented in the the
+top level.
 
-**IMPORTANT**: in the subdirectory `tiddit`, if `save_intermediates` is true,
-there will be `vcf` files. But, more importantly, there will *always* be a file
+**IMPORTANT**: in the subdirectory `tiddit`, there will be a file
 called `<sample or group>_tiddit.ploidies.tab` which has the TIDDIT estimation
 of the ploidy of the sample over each contig in the genome file. There is not
 good documentation on how this is calculated, and I do not trust the results. 
-But, they are there.  
+As background -- TIDDIT is a tool written for tumor variant calling. I have 
+been using it because it is one of the few that actually taks the ploidy 
+as an argument. However, the esimated ploidy results seem nonsensical. 
+Structural variant calling on short reads is already a frougth exercise. At 
+some point it is worth adding another few SV callers to for comparison's sake.
 
 Additionally, in the `tiddit` subdirectory, there is a bed file with coverage
 across some bin width. By default, the binwidth is 500. In the
