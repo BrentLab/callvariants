@@ -183,13 +183,14 @@ that are presented in the the top level.
 there will be `vcf` files. But, more importantly, there will *always* be a file
 called `<sample or group>_tiddit.ploidies.tab` which has the TIDDIT estimation
 of the ploidy of the sample over each contig in the genome file. There is not
-good documentation on how this is calculated. Additionally, in the `tiddit`
-subdirectory, there is a bed file with coverage across some bin width. By
-default, the binwidth is 500. In the kn99_haploid profile, it is set to 10000.
-This can be used to more manually examine read depth and possible CNV events.
-Since CNVpytor is somewhat challenging to use and not terribly clear in what
-it is doing, the tiddit `.bed` coverage file can be used as a quick sanity
-check. Here is an example of parsing the bed file, using R:
+good documentation on how this is calculated, and I do not trust the results. 
+But, they are there.  
+
+Additionally, in the `tiddit` subdirectory, there is a bed file with coverage
+across some bin width. By default, the binwidth is 500. In the
+kn99_haploid profile, it is set to 10000. This can be used as a sanity check
+against CNVpytor. This is how you could go about parsing the coverage bed 
+in R:
 
 ```R
 library(tidyverse)
