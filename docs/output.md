@@ -57,14 +57,14 @@ easily recreated.
 In the main directory, the final `<sample>_markdups_tagged.bam` and
 `<sample>_markdups_tagged.bam.bai` alignment files will be stored at the
 top level. These have been run through picard mark duplicates, and they have
-had the sample name and some other information added as with picard
-add or replace read tags.
+had the sample name and some other information added to the metadata in the 
+file header.
 
 If `params.save_intermediates` is set, then the `bwamem2` and `bwa` indicies
 will be saved as subdirectories of `alignment`.
 
-in the `picard` subdirectory, the duplicated marked intermediate `bam` will be
-saved *only* went the `debug` parameter is `true`. However, the mark duplicates
+in the `picard` subdirectory, the duplicate marked intermediate `bam` will be
+saved *only* when the `debug` parameter is `true`. However, the mark duplicates
 report will always be saved here as
 `<sample>_markdups.Markduplicates.metrics.txt`.
 
