@@ -168,17 +168,19 @@ workflow CALLVARIANTS {
     //
     FASTQ_FASTQC_UMITOOLS_TRIMGALORE (
        ch_cat_fastq,
+       params.skip_fastqc,
        params.with_umi,
        params.skip_umi_extract,
        params.skip_trimming,
        params.umi_discard_read,
        params.min_trimmed_reads
     )
+
     ch_reports  = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.fastqc_zip.collect{meta, logs -> logs})
-    ch_reports = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_zip.collect{meta, logs -> logs})
-    ch_reports = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_log.collect{meta, logs -> logs})
-    ch_reports = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_read_count.collect{meta, logs -> logs})
-    ch_versions = ch_versions.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.versions)
+    ch_reports  = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_zip.collect{meta, logs -> logs})
+    ch_reports  = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_log.collect{meta, logs -> logs})
+    // ch_reports  = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_read_count.collect{meta, logs -> logs})
+    ch_versions = ch_versions.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.versions.first())
 
     //
     // SUBWORKFLOW: Align the reads with bwamem2
