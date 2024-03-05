@@ -159,7 +159,7 @@ workflow CALLVARIANTS {
     // add the genome_name attribute to the ch_cat_fastq channel meta
     ch_cat_fastq
         .map { meta, reads -> [meta.genome_name, meta, reads] }
-        .join(PREPARE_GENOME.out.genome_data, by:0)
+        .combine(PREPARE_GENOME.out.genome_data, by:0)
         .map{ it -> it[1..-1] } // remove genome_name from tuple
         .set { ch_reads_with_genome_data }
 
