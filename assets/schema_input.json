@@ -10,7 +10,7 @@
             "sample": {
                 "type": "string",
                 "pattern": "^\\S+$",
-                "errorMessage": "Sample name must be provided, must be unique, and cannot contain spaces"
+                "errorMessage": "Sample name must be provided and cannot contain spaces. Note that if there are repeated samplenames, the fastq will be concatenated (typically this is used for libraries split across lanes)"
             },
             "group": {
                 "type": "string",
@@ -19,7 +19,8 @@
             },
             "genome_name": {
                 "type": "string",
-                "errorMessage": "`genome_name` is used to avoid creating duplicate indicies when multiple samples use the same genome. What matters here is internal consistency in a given samplesheet -- let's say you have three groups of samples: a group which uses the input genome, a group which has marker_1 and a group with has marker_2. For the input genome group, you would maybe set `genome_name` to `input_genome`. For the marker_1 group, you would set `genome_name` to `input_genome_marker_1`. For the marker_2 group, you would set `genome_name` to `input_genome_marker_2`. The names are arbitrary. What matters is that the `genome_name` and `additional_sequence` entries are consistent within a set."
+                "pattern": "^\\S+$",
+                "errorMessage": "The genome name must correspond to one of the genome_name keys in the additional_fasta. For the reference genome, leave the 'fasta' field blank and provide a default value, eg 'reference'"
             },
             "fastq_1": {
                 "type": "string",
@@ -42,24 +43,9 @@
                         "maxLength": 0
                     }
                 ]
-            },
-            "additional_fasta":{
-                "errorMessage": "[Optional] Any additional sequences to append to the genome for a given sample. Must be in fasta format. The filename cannot contain spaces and must have extension '.fa', '.fasta' or '.fasta.gz'",
-                "anyOf": [
-                    {
-                        "type": "string",
-                        "format": "file-path",
-                        "exists": true,
-                        "pattern": "^\\S+\\.f(ast)?a(\\.gz)?$"
-                    },
-                    {
-                        "type": "string",
-                        "maxLength": 0
-                    }
-                ]
             }
 
         },
-        "required": ["sample", "group", "genome_name", "fastq_1"]
+        "required": ["sample", "group", "fastq_1"]
     }
 }

@@ -1,0 +1,34 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://raw.githubusercontent.com/BrentLab/callvariants/master/assets/additional_fasta_shema.json",
+    "title": "BrentLab/callvariants pipeline - params.additional_fasta schema",
+    "description": "Schema for the file provided with params.additional_fasta",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "genome_name": {
+                "type": "string",
+                "pattern": "^\\S+$",
+                "errorMessage": "Sample name must be provided and cannot contain spaces. Note that if there are repeated samplenames, the fastq will be concatenated (typically this is used for libraries split across lanes)"
+            },
+            "additional_fasta": {
+                "errorMessage": "Fasta file to be appended to the main genome fasta. Cannot contain spaces and must have extension '.fa.gz' or '.fasta.gz'",
+                "anyOf":[
+                    {
+                        "type": "string",
+                        "format": "file-path",
+                        "exists": true,
+                        "pattern":  "^\\S+\\.f(ast)?a(\\.gz)?$"
+
+                    },
+                    {
+                        "type": "string",
+                        "maxLength": 0
+
+                    }
+                ]
+            }
+        }
+    }
+}

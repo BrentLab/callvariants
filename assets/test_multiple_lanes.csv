@@ -1,0 +1,5 @@
+sample,group,genome_name,fastq_1,fastq_2
+sample1,1,NAT,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti_L001_R1_001.fastq.gz,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti_L001_R2_001.fastq.gz
+sample1,1,NAT,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti_L002_R1_001.fastq.gz,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti_L002_R2_001.fastq.gz
+sample2,1,reference,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti2_L001_R1_001.fastq.gz,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti2_L001_R2_001.fastq.gz
+sample2,1,reference,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti2_L002_R1_001.fastq.gz,https://github.com/BrentLab/callvariants/raw/main/assets/test_data/aviti2_L002_R2_001.fastq.gz

@@ -5,6 +5,39 @@
     "description": "a variant caller intended for both genotype checks and BSA data processing for the Brent and Doering labs",
     "type": "object",
     "definitions": {
+        "fastq_options": {
+            "title": "fastq options",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "skip_fastqc": {
+                    "type": "boolean",
+                    "description": "defaults to false. set to true to skip fastqc"
+                },
+                "skip_trimming": {
+                    "type": "boolean",
+                    "description": "defaults to false. set to true to skip trimmomatic"
+                },
+                "min_trimmed_reads": {
+                    "type": "integer",
+                    "default": 10000,
+                    "description": "defaults to 10000 reads. libraries with less than this after trimming will not be sent for downstream processing"
+                },
+                "umi_discard_reads": {
+                    "type": "string",
+                    "description": "UMI is not intentionally configured in this pipeline, though it is an option. the user is responsible for all configuration. See the nf-core fastq_fastqc_umitools_trimgaolore module for details on this parameter"
+                },
+                "skip_umi_extract": {
+                    "type": "boolean",
+                    "description": "UMI is not intentionally configured in this pipeline, though it is an option. the user is responsible for all configuration. See the nf-core fastq_fastqc_umitools_trimgaolore module for details on this parameter"
+                },
+                "with_umi": {
+                    "type": "boolean",
+                    "description": "UMI is not intentionally configured in this pipeline, though it is an option. the user is responsible for all configuration. See the nf-core fastq_fastqc_umitools_trimgaolore module for details on this parameter"
+                }
+            }
+        },
         "variant_calling": {
             "title": "Variant calling",
             "type": "object",
@@ -75,6 +108,13 @@
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
+                },
+                "additional_fasta": {
+                    "type": "string",
+                    "format": "file-path",
+                    "mimetype": "test/json",
+                    "schema": "assets/additional_fasta_schema.json",
+                    "description": "A json file that describes the set of samples which correspond to a given additional fasta file"
                 },
                 "outdir": {
                     "type": "string",
@@ -328,6 +368,9 @@
         }
     },
     "allOf": [
+        {
+            "$ref": "#/definitions/fastq_options"
+        },
         {
             "$ref": "#/definitions/variant_calling"
         },

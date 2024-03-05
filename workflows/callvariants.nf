@@ -35,6 +35,7 @@ ch_multiqc_custom_methods_description = params.multiqc_methods_description ? fil
 //
 // SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
 //
+include { FASTQ_FASTQC_UMITOOLS_TRIMGALORE } from '../subworkflows/nf-core/fastq_fastqc_umitools_trimgalore/main'
 include { PREPARE_GENOME } from "${projectDir}/subworkflows/local/prepare_genome"
 include { ALIGN          } from "${projectDir}/subworkflows/local/align"
 include { CALL_SV        } from "${projectDir}/subworkflows/local/call_sv"
@@ -52,6 +53,7 @@ include { CALL_SNV       } from "${projectDir}/subworkflows/local/call_snv"
 include { FASTQC                      } from '../modules/nf-core/fastqc/main'
 include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
 include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
+include { CAT_FASTQ                   } from '../modules/nf-core/cat/fastq/main'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -108,31 +110,42 @@ workflow CALLVARIANTS {
     //
     // use nf-validation plugin to parse samplesheet
     //
-    ch_input = Channel.fromSamplesheet("input")
-        .multiMap{ sample, group, genome_name, fastq_1, fastq_2, additional_fasta ->
+    // note that `sample` is extracted out of the meta tuple because it will
+    // be used as a key to join the ch_genome
+    ch_fastq =Channel.fromSamplesheet("input")
+        .map{ sample, group, genome_name, fastq_1, fastq_2 ->
             def single_end = fastq_2.size() == 0
             def reads = single_end ? [fastq_1] : [fastq_1, fastq_2]
-            reads: [["id": sample,
-                     "group": group,
-                     "genome_name": genome_name,
-                     "single_end": single_end], reads]
-            genome: [["genome_name": genome_name], additional_fasta]
+            def meta = ["id": sample,"group": group, "genome_name": genome_name.replace("'",""), "single_end": single_end]
+            return [meta, reads]
         }
+        .groupTuple()
+        .branch { meta, fastqs ->
+            single : fastqs.size() == 1
+                return [ meta, fastqs.flatten() ]
+            multiple : fastqs.size() > 1
+                return [ meta, fastqs.flatten() ]}
 
-    // check that for any given genome_name there is only one additional_fasta
-    ch_additional_fasta = ch_input.genome.unique()
+    //
+    // MODULE: Concatenate FastQ files from same sample if required
+    //
+    CAT_FASTQ (
+        ch_fastq.multiple
+    )
+    .reads
+    .mix(ch_fastq.single)
+    .set { ch_cat_fastq }
+    ch_versions = ch_versions.mix(CAT_FASTQ.out.versions.first().ifEmpty(null))
 
-    ch_additional_fasta
-        .map { it[0].genome_name }
-        .collect()
-        .subscribe { genome_names ->
-            def genome_name_counts = genome_names.groupBy { it }.collectEntries { k, v -> [k, v.size()] }
-            def duplicates = genome_name_counts.findAll { k, v -> v > 1 }
 
-            if (duplicates) {
-                error "Found duplicate genome names: ${duplicates.keySet().join(', ')}"
-            }
+    //
+    // use nf-validation plugin to parse additional fasta samplesheet
+    //
+    Channel.fromSamplesheet("additional_fasta")
+        .map{ genome_name, fasta ->
+            return [['genome_name': genome_name], fasta]
         }
+        .set { ch_additional_fasta }
 
     //
     // SUBWORKFLOW: Prepare the genome indicies, etc
@@ -143,20 +156,29 @@ workflow CALLVARIANTS {
     )
     ch_versions = ch_versions.mix(PREPARE_GENOME.out.versions)
 
+    // add the genome_name attribute to the ch_cat_fastq channel meta
+    ch_cat_fastq
+        .map { meta, reads -> [meta.genome_name, meta, reads] }
+        .join(PREPARE_GENOME.out.genome_data, by:0)
+        .map{ it -> it[1..-1] } // remove genome_name from tuple
+        .set { ch_reads_with_genome_data }
+
     //
     // MODULE: Run FastQC
     //
-    FASTQC (
-        ch_input.reads
+    FASTQ_FASTQC_UMITOOLS_TRIMGALORE (
+       ch_cat_fastq,
+       params.with_umi,
+       params.skip_umi_extract,
+       params.skip_trimming,
+       params.umi_discard_read,
+       params.min_trimmed_reads
     )
-    ch_reports  = ch_reports.mix(FASTQC.out.zip.collect{meta, logs -> logs})
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
-
-    ch_input.reads
-        .map { meta, reads -> [meta.genome_name, meta, reads] }
-        .combine(PREPARE_GENOME.out.genome_data, by:0)
-        .map{ it -> it[1..-1] } // remove genome_name from tuple
-        .set { ch_reads_with_genome_data }
+    ch_reports  = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.fastqc_zip.collect{meta, logs -> logs})
+    ch_reports = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_zip.collect{meta, logs -> logs})
+    ch_reports = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_log.collect{meta, logs -> logs})
+    ch_reports = ch_reports.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.trim_read_count.collect{meta, logs -> logs})
+    ch_versions = ch_versions.mix(FASTQ_FASTQC_UMITOOLS_TRIMGALORE.out.versions)
 
     //
     // SUBWORKFLOW: Align the reads with bwamem2

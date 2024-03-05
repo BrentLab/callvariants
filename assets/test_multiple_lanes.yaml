@@ -1,0 +1,3 @@
+- genome_name: NAT
+  additional_fasta: https://github.com/BrentLab/callvariants/raw/main/assets/genome_files/NAT.fa
+- genome_name: reference
